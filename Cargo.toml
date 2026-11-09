@@ -11,5 +11,6 @@ publish = false
 # This exact source is also injected as the `crate::game::atlas_mod`
 # module of Horizon's client by horizon-mixins.
 path = "mixins/atlas/core.rs"
+crate-type = ["cdylib"]
 
 [workspace]
