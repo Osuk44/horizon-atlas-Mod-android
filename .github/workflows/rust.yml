@@ -21,8 +21,11 @@ jobs:
         with:
           target: aarch64-linux-android
 
-      - name: Build cdylib for Android
-        run: cargo build --release --target aarch64-linux-android --verbose
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Build cdylib for Android with cargo-ndk
+        run: cargo ndk -t arm64-v8a --release build --verbose
 
       - name: Run tests
         run: cargo test --verbose
@@ -36,7 +39,7 @@ jobs:
           # Copiar el manifiesto
           cp mod.toml package/horizon-mods/atlas/mod.toml
 
-          # Copiar dinámicamente cualquier librería .so compilada para el target de Android
+          # Copiar dinámicamente la librería .so generada por cargo-ndk para Android
           cp target/aarch64-linux-android/release/*.so package/horizon-native-mods/libatlas.so
 
           # Comprimir todo en un ZIP listo para usar
