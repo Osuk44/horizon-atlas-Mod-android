@@ -1,4 +1,4 @@
-name: Rust
+name: Build & Package Atlas
 
 on:
   push:
@@ -27,8 +27,24 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-    - name: Upload compiled library
+    - name: Prepare release package
+      run: |
+        # Crear la estructura de carpetas idéntica a la de Starling
+        mkdir -p package/horizon-mods/atlas
+        mkdir -p package/horizon-native-mods
+
+        # Copiar el manifiesto (asegúrate de que mod.toml esté en la raíz de tu repo)
+        cp mod.toml package/horizon-mods/atlas/mod.toml
+
+        # Copiar la librería compilada
+        cp target/aarch64-linux-android/release/libatlas.so package/horizon-native-mods/libatlas.so
+
+        # Comprimir todo en un ZIP listo para usar
+        cd package
+        zip -r ../atlas-starling-release.zip *
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libatlas
-        path: target/aarch64-linux-android/release/libatlas.so
+        name: atlas-starling-release
+        path: atlas-starling-release.zip
