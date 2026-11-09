@@ -6430,7 +6430,7 @@ mod tests {
         assert!(a > FACES_SLOT_KEY && b > FACES_SLOT_KEY);
     }
 }
-        #[no_mangle]
+        #[unsafe(no_mangle)]
 pub extern "C" fn horizon_mod_init() {
     // Punto de entrada para inicializar el minimapa Atlas en Horizon
     
