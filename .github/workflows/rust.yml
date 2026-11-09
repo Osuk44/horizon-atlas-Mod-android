@@ -21,13 +21,20 @@ jobs:
         with:
           target: aarch64-linux-android
 
+      # Recomendado: Añadir caché para acelerar futuras compilaciones
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      # Optimización: Instalar cargo-ndk usando un action precompilado es más rápido que hacer cargo install
       - name: Install cargo-ndk
-        run: cargo install cargo-ndk
+        uses: taiki-e/install-action@cargo-ndk
 
       - name: Build cdylib for Android with cargo-ndk
-        run: cargo ndk -t arm64-v8a --release build --verbose
+        # CORREGIDO: --release va después de build
+        run: cargo ndk -t arm64-v8a build --release --verbose
 
       - name: Run tests
+        # Nota: Esto correrá los tests en la arquitectura del host (Linux x86_64)
         run: cargo test --verbose
 
       - name: Prepare release package
@@ -39,8 +46,9 @@ jobs:
           # Copiar el manifiesto
           cp mod.toml package/horizon-mods/atlas/mod.toml
 
-          # Copiar dinámicamente la librería .so generada por cargo-ndk para Android
-          cp target/aarch64-linux-android/release/*.so package/horizon-native-mods/libatlas.so
+          # Copiar dinámicamente la librería .so generada. 
+          # Es mejor especificar el nombre real de tu librería (según tu log, es libhorizon_atlas.so)
+          cp target/aarch64-linux-android/release/libhorizon_atlas.so package/horizon-native-mods/libatlas.so
 
           # Comprimir todo en un ZIP listo para usar
           cd package
