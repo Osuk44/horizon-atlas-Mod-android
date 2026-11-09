@@ -14,37 +14,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        target: aarch64-linux-android
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: aarch64-linux-android
 
-    - name: Build cdylib for Android
-      run: cargo build --release --target aarch64-linux-android --verbose
+      - name: Build cdylib for Android
+        run: cargo build --release --target aarch64-linux-android --verbose
 
-    - name: Run tests
-      run: cargo test --verbose
+      - name: Run tests
+        run: cargo test --verbose
 
-    - name: Prepare release package
-      run: |
-        # Crear la estructura de carpetas idéntica a la de Starling
-        mkdir -p package/horizon-mods/atlas
-        mkdir -p package/horizon-native-mods
+      - name: Prepare release package
+        run: |
+          # Crear la estructura de carpetas idéntica a la de Starling
+          mkdir -p package/horizon-mods/atlas
+          mkdir -p package/horizon-native-mods
 
-        # Copiar el manifiesto (asegúrate de que mod.toml esté en la raíz de tu repo)
-        cp mod.toml package/horizon-mods/atlas/mod.toml
+          # Copiar el manifiesto
+          cp mod.toml package/horizon-mods/atlas/mod.toml
 
-        # Copiar la librería compilada
-        cp target/aarch64-linux-android/release/libatlas.so package/horizon-native-mods/libatlas.so
+          # Copiar dinámicamente cualquier librería .so compilada para el target de Android
+          cp target/aarch64-linux-android/release/*.so package/horizon-native-mods/libatlas.so
 
-        # Comprimir todo en un ZIP listo para usar
-        cd package
-        zip -r ../atlas-starling-release.zip *
+          # Comprimir todo en un ZIP listo para usar
+          cd package
+          zip -r ../atlas-starling-release.zip *
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: atlas-starling-release
-        path: atlas-starling-release.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-starling-release
+          path: atlas-starling-release.zip
