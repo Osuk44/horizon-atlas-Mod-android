@@ -1,0 +1,5 @@
+[mod]
+id = "atlas"
+name = "Atlas Minimap"
+version = "0.2.0"
+target_game_version = "0.1.0"
