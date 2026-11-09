@@ -6428,5 +6428,10 @@ mod tests {
         assert!(a < 0 && b < 0 && a != b);
         assert_eq!(images.id(TileKey { cut: Cut::Surface, level: 0, x: 0, z: 0 }), a);
         assert!(a > FACES_SLOT_KEY && b > FACES_SLOT_KEY);
-    }
+    }        
+        #[no_mangle]
+pub extern "C" fn horizon_mod_init() {
+    // Punto de entrada para inicializar el minimapa Atlas en Horizon
+    
+    
 }
