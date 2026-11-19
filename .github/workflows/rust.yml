@@ -3,8 +3,13 @@ name: Build & Package Atlas
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ "main" ]
+
+permissions:
+  contents: write
 
 env:
   CARGO_TERM_COLOR: always
@@ -32,17 +37,10 @@ jobs:
 
       - name: Prepare release package
         run: |
-          # Crear la estructura de carpetas
           mkdir -p package/horizon-mods/atlas
           mkdir -p package/horizon-native-mods
-
-          # Copiar el manifiesto mod.toml
           cp mod.toml package/horizon-mods/atlas/mod.toml
-
-          # Copiar la librería .so compilada para Android
           cp target/aarch64-linux-android/release/*.so package/horizon-native-mods/libatlas.so
-
-          # Comprimir en atlas-release.zip
           cd package
           zip -r ../atlas-release.zip *
 
@@ -51,3 +49,14 @@ jobs:
         with:
           name: atlas-release
           path: atlas-release.zip
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          body: "Native (arm64-v8a) binaries for Atlas and Minimap compiled for Starling, packaged and ready to load in the launcher."
+          files: |
+            atlas-release.zip
+            target/aarch64-linux-android/release/*.so
